@@ -10,7 +10,7 @@ export class AbstractRepository<TDocument extends AbstractDocument> {
   async create(document: Omit<TDocument, '_id'>): Promise<TDocument> {
     const createdDocument = new this.model({
       ...document,
-      _ud: new Types.ObjectId(),
+      _id: new Types.ObjectId(),
     });
 
     return (await createdDocument.save()).toJSON() as TDocument;
@@ -21,7 +21,7 @@ export class AbstractRepository<TDocument extends AbstractDocument> {
 
     if (!document) {
       this.logger.warn('Document was not found with filter query: ', filterQuery);
-      throw new NotFoundException();
+      throw new NotFoundException('Document was not found');
     }
 
     return document;
@@ -32,7 +32,7 @@ export class AbstractRepository<TDocument extends AbstractDocument> {
 
     if (!document) {
       this.logger.warn('Document was not found with filter query: ', filterQuery);
-      throw new NotFoundException();
+      throw new NotFoundException('Document was not found');
     }
 
     return document;
@@ -47,7 +47,7 @@ export class AbstractRepository<TDocument extends AbstractDocument> {
 
     if (documents.length === 0) {
       this.logger.warn('Documents were not found with filter query: ', filterQuery);
-      throw new NotFoundException();
+      throw new NotFoundException('Documents were not found');
     }
 
     return documents;

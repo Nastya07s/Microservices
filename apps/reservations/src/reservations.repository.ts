@@ -8,7 +8,7 @@ import { Model } from 'mongoose';
 export class ReservationsRepository extends AbstractRepository<ReservationDocument> {
   protected readonly logger = new Logger(ReservationDocument.name);
 
-  constructor(@InjectModel(ReservationDocument.name) reservationDocument: Model<ReservationDocument>) {
-    super(reservationDocument);
+  constructor(@InjectModel(ReservationDocument.name) reservationModel: Model<ReservationDocument>) {
+    super(reservationModel);
   }
 }
