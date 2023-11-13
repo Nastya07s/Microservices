@@ -6,7 +6,7 @@ import { Types } from 'mongoose';
 
 @Injectable()
 export class ReservationsService {
-  constructor(private reservationsRepository: ReservationsRepository) { }
+  constructor(private reservationsRepository: ReservationsRepository) {}
 
   create(createReservationDto: CreateReservationDto, userId: string) {
     return this.reservationsRepository.create({
