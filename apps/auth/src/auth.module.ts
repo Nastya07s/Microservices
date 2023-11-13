@@ -5,9 +5,9 @@ import { UsersModule } from './users/users.module';
 import { LoggerModule } from '@app/common';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import * as Joi from 'joi';
 import { LocalStrategy } from '../strategies/local.strategy';
 import { JwtStrategy } from '../strategies/jwt.strategy';
+import * as Joi from 'joi';
 
 @Module({
   imports: [
@@ -30,10 +30,11 @@ import { JwtStrategy } from '../strategies/jwt.strategy';
         JWT_EXPIRATION: Joi.string().required(),
         HTTP_PORT: Joi.number().required(),
         TCP_PORT: Joi.number().required(),
+        TCP_HOST: Joi.string().required(),
       }),
     }),
   ],
   controllers: [AuthController],
   providers: [AuthService, LocalStrategy, JwtStrategy],
 })
-export class AuthModule {}
+export class AuthModule { }
