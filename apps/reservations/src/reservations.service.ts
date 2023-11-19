@@ -1,34 +1,43 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { CreateReservationDto } from './dto/create-reservation.dto';
 import { UpdateReservationDto } from './dto/update-reservation.dto';
 import { ReservationsRepository } from './reservations.repository';
 import { Types } from 'mongoose';
+import { PAYMENTS_SERVICE } from '@app/common';
+import { ClientProxy } from '@nestjs/microservices';
+import { map } from 'rxjs';
 
 @Injectable()
 export class ReservationsService {
-  constructor(private reservationsRepository: ReservationsRepository) {}
+  constructor(private reservationsRepository: ReservationsRepository, @Inject(PAYMENTS_SERVICE) private readonly paymentsService: ClientProxy) {}
 
-  create(createReservationDto: CreateReservationDto, userId: string) {
-    return this.reservationsRepository.create({
-      ...createReservationDto,
-      timestamp: new Date(),
-      userId,
-    });
+  async create(createReservationDto: CreateReservationDto, userId: string) {
+    return this.paymentsService.send('create_charge', createReservationDto.charge).pipe(
+      map((res) => {
+        console.log(res);
+        return this.reservationsRepository.create({
+          ...createReservationDto,
+          timestamp: new Date(),
+          invoiceId: res.id,
+          userId,
+        });
+      }),
+    );
   }
 
-  findAll() {
+  async findAll() {
     return this.reservationsRepository.find({});
   }
 
-  findOne(id: string) {
+  async findOne(id: string) {
     return this.reservationsRepository.findOne({ _id: new Types.ObjectId(id) });
   }
 
-  update(id: string, updateReservationDto: UpdateReservationDto) {
+  async update(id: string, updateReservationDto: UpdateReservationDto) {
     return this.reservationsRepository.findOneAndUpdate({ _id: new Types.ObjectId(id) }, { $set: updateReservationDto });
   }
 
-  remove(id: string) {
+  async remove(id: string) {
     return this.reservationsRepository.findOneAndDelete({ _id: new Types.ObjectId(id) });
   }
 }
